@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "Phishguard",
+    "version": "1.0",
+    "description": "Detects phishing messages and websites in vernacular languages.",
+    "permissions": [
+        "activeTab",
+        "scripting"
+    ],
+    "host_permissions": [
+        "<all_urls>",
+        "http://localhost:8000/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ]
+}
