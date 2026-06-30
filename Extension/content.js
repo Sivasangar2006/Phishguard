@@ -1,8 +1,22 @@
 // ===============================
 // 🛡️ PhishGuard - Production Content Script
 // ===============================
+// Detection runs fully ON-DEVICE — no backend. The model + scorer +
+// heuristics + fusion are loaded as content scripts before this file
+// (see manifest.json). Verdicts are identical to the reference Python
+// backend (verified by Model/detector_parity).
 
 console.log("🛡️ PhishGuard: Protection Active");
+
+// On-device detector (Tier 0 heuristics + Tier 1 ML + fusion).
+const PG_DETECTOR =
+    (typeof PHISHGUARD_MODEL !== "undefined" && typeof PhishGuardDetector !== "undefined")
+        ? PhishGuardDetector.make(PHISHGUARD_MODEL)
+        : null;
+
+if (!PG_DETECTOR) {
+    console.error("⚠ PhishGuard: model/detector not loaded — check manifest script order.");
+}
 
 // =====================================
 // 1️⃣ SITE CONFIGURATION (ADD SITES HERE)
@@ -125,34 +139,17 @@ function processNode(node, sourceName) {
 // 7️⃣ BACKEND CONNECTOR
 // =====================================
 
-async function triggerScan(text, node, sourceName) {
+function triggerScan(text, node, sourceName) {
 
-    // Visual state: scanning
-    node.style.borderBottom = "2px solid orange";
-    node.style.transition = "border 0.2s ease";
-
-    try {
-
-        const response = await fetch("http://localhost:8000/scan", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                text: text,
-                source: sourceName,
-                url: window.location.href
-            })
-        });
-
-        if (!response.ok) throw new Error("Backend Error");
-
-        const data = await response.json();
-
-        handleResponse(data, node, text, sourceName);
-
-    } catch (error) {
-        console.error("⚠ Backend unreachable. Is FastAPI running?");
+    if (!PG_DETECTOR) {
         node.style.borderBottom = "2px dotted gray";
+        return;
     }
+
+    // On-device detection — instant, no network.
+    node.style.transition = "border 0.2s ease";
+    const data = PG_DETECTOR.detect(text, window.location.href);
+    handleResponse(data, node, text, sourceName);
 }
 
 // =====================================
@@ -202,22 +199,34 @@ function markReportable(node, originalText, sourceName) {
 }
 
 async function reportMessage(text, sourceName, userLabel) {
+    // Redact PII ON-DEVICE, then store locally — no backend, nothing
+    // sensitive leaves the browser.
+    let redacted = text, counts = {};
+    if (typeof PhishGuardRedact !== "undefined") {
+        const r = PhishGuardRedact.redact(text);
+        redacted = r.text;
+        counts = r.counts;
+    }
+    const record = {
+        ts: new Date().toISOString(),
+        text: redacted,
+        source: sourceName,
+        url_host: location.hostname,
+        user_label: userLabel || null,
+        pii_removed: counts
+    };
+
     try {
-        const res = await fetch("http://localhost:8000/report", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                text: text,
-                source: sourceName,
-                url: window.location.href,
-                user_label: userLabel || null
-            })
-        });
-        const data = await res.json();
-        console.log("🛡️ PhishGuard report sent. Redacted:", data.redaction);
+        if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+            const cur = await chrome.storage.local.get({ reports: [] });
+            cur.reports.push(record);
+            await chrome.storage.local.set({ reports: cur.reports });
+        }
+        console.log("🛡️ PhishGuard report saved locally. Redacted:",
+            typeof PhishGuardRedact !== "undefined" ? PhishGuardRedact.summary(counts) : counts);
         return true;
     } catch (e) {
-        console.error("⚠ Could not send report. Is the backend running?");
+        console.error("⚠ Could not save report locally.", e);
         return false;
     }
 }

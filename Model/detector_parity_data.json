@@ -1,0 +1,76 @@
+{
+ "rows": [
+  {
+   "text": "URGENT! Aapka SBI khata band ho jayega. Turant KYC update karo aur OTP batao: http://sbi-verify.xyz",
+   "risk": "high",
+   "score": 150,
+   "ml": 0.966
+  },
+  {
+   "text": "प्रिय ग्राहक, आपका SBI खाता बंद हो जाएगा। तुरंत KYC update करें और OTP बताएं: http://sbi-verify.xyz",
+   "risk": "high",
+   "score": 138,
+   "ml": 0.971
+  },
+  {
+   "text": "வாழ்த்துக்கள்! நீங்கள் ஒரு பரிசு வென்றுள்ளீர்கள். claim now: http://prize.top/redeem",
+   "risk": "high",
+   "score": 50,
+   "ml": 0.938
+  },
+  {
+   "text": "482913 is your OTP for SBI login. Do NOT share it with anyone. -SBI",
+   "risk": "low",
+   "score": 40,
+   "ml": 0.037
+  },
+  {
+   "text": "Hey, are we still meeting for lunch at 1pm tomorrow?",
+   "risk": "low",
+   "score": 0,
+   "ml": 0.066
+  },
+  {
+   "text": "Dear customer, your HDFC account is suspended. Verify immediately with your CVV and PIN.",
+   "risk": "high",
+   "score": 80,
+   "ml": 0.83
+  },
+  {
+   "text": "Your Swiggy order has been delivered. Please rate your experience.",
+   "risk": "low",
+   "score": 0,
+   "ml": 0.129
+  },
+  {
+   "text": "This is CBI. You are under digital arrest, transfer Rs 50000 now",
+   "risk": "medium",
+   "score": 16,
+   "ml": 0.51
+  },
+  {
+   "text": "Amazon sale is live, flat 50% off on electronics today.",
+   "risk": "low",
+   "score": 0,
+   "ml": 0.088
+  },
+  {
+   "text": "மருத்துவர் திங்கள் 11 மணிக்கு சந்திப்பை உறுதி செய்துள்ளார்.",
+   "risk": "low",
+   "score": 0,
+   "ml": 0.472
+  },
+  {
+   "text": "Ghar baithe rozana 5000 kamaiye, abhi register karein",
+   "risk": "medium",
+   "score": 14,
+   "ml": 0.739
+  },
+  {
+   "text": "Your cab is arriving in 3 minutes at the gate.",
+   "risk": "low",
+   "score": 0,
+   "ml": 0.208
+  }
+ ]
+}

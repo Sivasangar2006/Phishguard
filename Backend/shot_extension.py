@@ -9,7 +9,9 @@ from playwright.sync_api import sync_playwright
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
 
-CONTENT_JS = Path(__file__).parent.parent / "Extension" / "content.js"
+EXT = Path(__file__).parent.parent / "Extension"
+# Same files, same order as manifest.json content_scripts.
+SCRIPTS = ["model-data.js", "tier1.js", "heuristics.js", "redact.js", "detector.js", "content.js"]
 URL = "http://localhost:5500/extension-test.html"
 OUT = str(Path(__file__).parent / "phishguard_extension_render.png")
 
@@ -20,9 +22,11 @@ with sync_playwright() as p:
     page.on("console", lambda m: logs.append(m.text))
 
     page.goto(URL, wait_until="load")
-    # Inject the REAL content script. It sees hostname 'localhost', matches the
-    # SITE_CONFIG entry, and starts its MutationObserver immediately.
-    page.add_script_tag(path=str(CONTENT_JS))
+    # Inject the REAL content scripts in manifest order (model + scorer +
+    # heuristics + redact + detector + content). Detection is fully on-device,
+    # so this works with NO backend running.
+    for s in SCRIPTS:
+        page.add_script_tag(path=str(EXT / s))
     # Now stream in the planted messages so the observer catches them live.
     page.evaluate("window.injectMessages()")
 

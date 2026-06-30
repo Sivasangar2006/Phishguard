@@ -7,10 +7,16 @@ Hindi, Tamil, Telugu, Bengali, and code-mixed "Hinglish". PhishGuard is a browse
 extension that flags scam messages **in the languages people actually get scammed
 in**, doing the work locally and escalating rarely.
 
-> **Status:** working end-to-end MVP. Tier 0 (heuristics) + Tier 1 (ML) fused
-> behind one API, a Chrome extension that decorates suspicious messages in real
-> time, a synthetic seed dataset + trained classifier, and a privacy-safe
-> crowdsourced reporting pipeline. See [Roadmap](#roadmap) for what's next.
+> **Status:** working end-to-end MVP — and detection now runs **fully
+> on-device** (no backend). The trained model is exported to JS and runs in the
+> browser, so the extension is self-contained and installable. The FastAPI
+> service remains as a reference/training implementation. See
+> [Roadmap](#roadmap).
+>
+> **On-device:** the browser detector produces verdicts **identical** to the
+> Python backend — verified to ~1e-6 by `Model/parity_test` and
+> `Model/detector_parity`. Reports are PII-redacted in-browser and stored in
+> `chrome.storage` — nothing leaves the device.
 
 ---
 
@@ -56,27 +62,34 @@ plugs in behind the same `/scan` contract — the redaction layer
 | `Extension/extension-test.html` | local harness that runs the **real** content.js |
 | `Extension/index.html` | backend+render demo (no extension needed) |
 
-## Quickstart
+## Quickstart — just load the extension (no backend)
 
-```bash
-# 1. Backend (Python 3.10–3.12)
-cd Backend
-pip install -r requirements.txt
-python -m uvicorn main:app --reload --port 8000
-
-# 2. Train the Tier 1 model (enables ML; backend runs Tier-0-only without it)
-cd ../Model
-pip install -r requirements.txt
-python dataset/generate_dataset.py
-python train.py
-
-# 3. Load the extension
-#    Chrome → chrome://extensions → Developer mode → Load unpacked → select Extension/
+```
+Chrome → chrome://extensions → Developer mode → Load unpacked → select Extension/
 ```
 
-Open WhatsApp Web / Gmail and suspicious messages get a colored underline.
-`http://localhost:8000/health` shows tier status; `http://localhost:8000/docs`
-is the interactive API.
+That's it. Open WhatsApp Web / Gmail and suspicious messages get a colored
+underline; **Alt+Click** a flagged message to report it (redacted locally). The
+toolbar popup shows on-device status. Nothing needs to run on a server.
+
+### Retraining the model (optional)
+
+The browser uses `Extension/model-data.js`, exported from the trained model. To
+retrain on new data and re-export:
+
+```bash
+cd Model
+pip install -r requirements.txt
+python dataset/generate_dataset.py   # build the corpus
+python train.py                      # train -> classifier.joblib
+python export_model.py               # -> Extension/model-data.js (+ model.json)
+```
+
+### Reference backend (optional)
+
+`Backend/` is the original FastAPI implementation of the same detector, kept as a
+reference and for server-side experiments. The on-device JS is verified to match
+it exactly. Run it with `uvicorn main:app --port 8000` if you want the API.
 
 ## How well does it work?
 
