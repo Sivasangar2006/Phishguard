@@ -3,184 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PhishGuard — Local Test Harness</title>
+    <title>PhishGuard — On-device Demo</title>
     <style>
-        body {
-            font-family: system-ui, "Segoe UI", Roboto, sans-serif;
-            max-width: 760px;
-            margin: 24px auto;
-            padding: 0 16px;
-            color: #1a1a1a;
-            background: #fafafa;
-        }
+        body { font-family: system-ui, "Segoe UI", Roboto, sans-serif; max-width: 760px; margin: 24px auto; padding: 0 16px; color: #1a1a1a; background: #fafafa; }
         h1 { font-size: 22px; margin-bottom: 2px; }
         .sub { color: #666; font-size: 13px; margin-top: 0; }
-        #status {
-            display: inline-block; padding: 4px 10px; border-radius: 6px;
-            font-size: 13px; font-weight: 600; margin: 8px 0 18px;
-        }
-        .up   { background: #e6f4ea; color: #137333; }
-        .down { background: #fce8e6; color: #c5221f; }
-        .card {
-            background: #fff; border: 1px solid #e3e3e3; border-radius: 10px;
-            padding: 14px 16px; margin-bottom: 14px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
-        }
-        .card .label { font-size: 12px; color: #888; margin-bottom: 6px; }
-        /* .msg is the node PhishGuard scans + decorates (mirrors content.js) */
-        .msg {
-            font-size: 15px; line-height: 1.5; padding-bottom: 4px;
-            display: inline-block;
-        }
-        .verdict {
-            margin-top: 10px; font-size: 12.5px; color: #444;
-        }
-        .badge {
-            display: inline-block; padding: 2px 8px; border-radius: 4px;
-            font-weight: 700; font-size: 12px; margin-right: 6px;
-        }
-        .badge.high   { background: #fce8e6; color: #c5221f; }
+        #status { display: inline-block; padding: 4px 10px; border-radius: 6px; font-size: 13px; font-weight: 600; margin: 8px 0 18px; background: #e6f4ea; color: #137333; }
+        .card { background: #fff; border: 1px solid #e3e3e3; border-radius: 10px; padding: 14px 16px; margin-bottom: 14px; }
+        .label { font-size: 12px; color: #888; margin-bottom: 6px; }
+        .msg { font-size: 15px; line-height: 1.5; display: inline-block; padding-bottom: 4px; }
+        .verdict { margin-top: 10px; font-size: 12.5px; color: #444; }
+        .badge { display: inline-block; padding: 2px 8px; border-radius: 4px; font-weight: 700; font-size: 12px; margin-right: 6px; }
+        .badge.high { background: #fce8e6; color: #c5221f; }
         .badge.medium { background: #fef7e0; color: #b06000; }
-        .badge.low    { background: #e6f4ea; color: #137333; }
+        .badge.low { background: #e6f4ea; color: #137333; }
         .reasons { color: #666; margin: 4px 0 0; padding-left: 18px; }
         .reasons li { margin: 1px 0; }
     </style>
 </head>
 <body>
-    <h1>🛡️ PhishGuard — Local Test Harness</h1>
-    <p class="sub">
-        Each card below is scanned by your live backend (<code>POST /scan</code>) and
-        decorated with the <em>same</em> border styles <code>content.js</code> uses:
-        <b style="color:#c5221f">red</b> = high, <b style="color:#b06000">orange</b> = medium,
-        <b style="color:#137333">green</b> = low.
-    </p>
-    <span id="status">checking backend…</span>
-
+    <h1>🛡️ PhishGuard — On-device Demo</h1>
+    <p class="sub">Detection runs entirely in this page — same scripts the
+        extension uses, <b>no backend, no internet</b>. Red = phishing, green = safe.</p>
+    <span id="status">loading on-device model…</span>
     <div id="messages"></div>
 
+    <!-- The on-device detector: same files, same order as the extension. -->
+    <script src="model-data.js"></script>
+    <script src="tier1.js"></script>
+    <script src="heuristics.js"></script>
+    <script src="detector.js"></script>
     <script>
-        // Same endpoint content.js targets.
-        const BACKEND = "http://localhost:8000";
-
-        // Planted test cases: a mix of legit + phishing, multiple languages.
         const CASES = [
-            {
-                label: "Legit SBI credit alert (Hindi + English) — should be GREEN",
-                text: "भारतीय स्टेट बैंक की ओर से शुभकामनाएं ! Greetings from SBI ! " +
-                      "Your A/C XXXXX373917 has credit of Rs 2.00 on 29/06/26. " +
-                      "Avl Bal Rs 3,894.80.-SBI Please do not reply to this auto generated email. " +
-                      "For any query, please contact our toll free number 18001234 & 18002100."
-            },
-            {
-                label: "Normal chat (English) — should be GREEN",
-                text: "Hey, are we still meeting for lunch at 1pm tomorrow?"
-            },
-            {
-                label: "Romanized Hindi OTP scam — should be RED",
-                text: "URGENT! Aapka SBI khata band ho jayega. Turant KYC update karo aur " +
-                      "OTP batao: https://sbi-verify.xyz/login"
-            },
-            {
-                label: "Devanagari KYC scam + lookalike URL — should be RED",
-                text: "प्रिय ग्राहक, आपका SBI खाता बंद हो जाएगा। तुरंत KYC update करें और OTP बताएं " +
-                      "वरना खाता ब्लॉक हो जाएगा: http://sbi-verify.xyz/login"
-            },
-            {
-                label: "Tamil lottery bait — should be RED",
-                text: "வாழ்த்துக்கள்! நீங்கள் ஒரு பரிசு வென்றுள்ளீர்கள். claim now link: http://prize.top/redeem"
-            },
-            {
-                label: "English bank impersonation + urgency — should be RED",
-                text: "Dear customer, your HDFC account is suspended. Verify your account " +
-                      "immediately with your CVV and PIN."
-            },
-            {
-                label: "Mild marketing (no scam intent) — should be GREEN",
-                text: "Amazon sale is live, check out the offers on electronics today."
-            }
+            ["Legit SBI credit alert (Hindi+Eng) — safe", "भारतीय स्टेट बैंक की ओर से शुभकामनाएं ! Greetings from SBI ! Your A/C XXXXX373917 has credit of Rs 2.00 on 29/06/26. Avl Bal Rs 3,894.80. Please do not reply. -SBI"],
+            ["Normal chat — safe", "Hey, are we still meeting for lunch at 1pm tomorrow?"],
+            ["Romanized Hindi OTP scam — phishing", "URGENT! Aapka SBI khata band ho jayega. Turant KYC update karo aur OTP batao: https://sbi-verify.xyz/login"],
+            ["Devanagari KYC scam — phishing", "प्रिय ग्राहक, आपका SBI खाता बंद हो जाएगा। तुरंत KYC update करें और OTP बताएं: http://sbi-verify.xyz/login"],
+            ["Tamil lottery bait — phishing", "வாழ்த்துக்கள்! நீங்கள் ஒரு பரிசு வென்றுள்ளீர்கள். claim now: http://prize.top/redeem"],
+            ["HDFC impersonation — phishing", "Dear customer, your HDFC account is suspended. Verify your account immediately with your CVV and PIN."],
+            ["Doctor appointment — safe", "Hi, your appointment with Dr. Mehta is confirmed for Monday 11 AM at Apollo Clinic."]
         ];
 
-        // Mirror of content.js handleResponse() border styling.
-        function paintBorder(node, risk) {
-            if (risk === "high") {
-                node.style.borderBottom = "4px solid red";
-                node.style.backgroundColor = "rgba(255, 0, 0, 0.15)";
-            } else if (risk === "medium") {
-                node.style.borderBottom = "3px solid orange";
-            } else {
-                node.style.borderBottom = "2px solid green";
-                // content.js fades green after 3s; we keep it for the screenshot.
-            }
+        function paint(node, risk) {
+            if (risk === "high") { node.style.borderBottom = "4px solid red"; node.style.backgroundColor = "rgba(255,0,0,0.15)"; }
+            else if (risk === "medium") { node.style.borderBottom = "3px solid orange"; }
+            else { node.style.borderBottom = "2px solid green"; }
         }
 
-        async function checkBackend() {
+        (function run() {
             const status = document.getElementById("status");
-            try {
-                const r = await fetch(`${BACKEND}/health`);
-                if (!r.ok) throw new Error();
-                status.textContent = "✅ backend reachable on :8000";
-                status.className = "up";
-                return true;
-            } catch {
-                status.textContent = "❌ backend not reachable — start it: uvicorn main:app --port 8000";
-                status.className = "down";
-                return false;
+            if (typeof PHISHGUARD_MODEL === "undefined" || typeof PhishGuardDetector === "undefined") {
+                status.textContent = "❌ scripts failed to load — open this file from the Extension/ folder";
+                status.style.background = "#fce8e6"; status.style.color = "#c5221f";
+                return;
             }
-        }
+            const det = PhishGuardDetector.make(PHISHGUARD_MODEL);
+            status.textContent = "✅ on-device model loaded — " + Object.keys(PHISHGUARD_MODEL.terms).length + " features, no backend";
+            const box = document.getElementById("messages");
+            for (const [label, text] of CASES) {
+                const card = document.createElement("div"); card.className = "card";
+                const lab = document.createElement("div"); lab.className = "label"; lab.textContent = label;
+                const msg = document.createElement("div"); msg.className = "msg"; msg.textContent = text;
+                const v = document.createElement("div"); v.className = "verdict";
+                card.append(lab, msg, v); box.appendChild(card);
 
-        async function scan(text) {
-            const r = await fetch(`${BACKEND}/scan`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text, source: "TestHarness", url: "" })
-            });
-            return r.json();
-        }
-
-        async function run() {
-            const ok = await checkBackend();
-            const container = document.getElementById("messages");
-
-            for (const c of CASES) {
-                const card = document.createElement("div");
-                card.className = "card";
-
-                const label = document.createElement("div");
-                label.className = "label";
-                label.textContent = c.label;
-
-                const msg = document.createElement("div");
-                msg.className = "msg";
-                msg.textContent = c.text;
-
-                const verdict = document.createElement("div");
-                verdict.className = "verdict";
-                verdict.textContent = ok ? "scanning…" : "(backend offline)";
-
-                card.append(label, msg, verdict);
-                container.appendChild(card);
-
-                if (!ok) continue;
-
-                try {
-                    const data = await scan(c.text);
-                    paintBorder(msg, data.risk);
-                    if (data.risk === "high") {
-                        msg.title = "⚠️ PHISHING DETECTED: " + (data.reasons || []).join(", ");
-                    }
-                    const reasonsHtml = (data.reasons || []).length
-                        ? `<ul class="reasons">${data.reasons.map(r => `<li>${r}</li>`).join("")}</ul>`
-                        : `<div class="reasons">no risk signals</div>`;
-                    verdict.innerHTML =
-                        `<span class="badge ${data.risk}">${data.risk.toUpperCase()}</span>` +
-                        `score ${data.score}` + reasonsHtml;
-                } catch (e) {
-                    verdict.textContent = "scan failed: " + e.message;
-                }
+                const data = det.detect(text, "");
+                paint(msg, data.risk);
+                const reasons = (data.reasons || []).length
+                    ? `<ul class="reasons">${data.reasons.map(r => `<li>${r}</li>`).join("")}</ul>` : "";
+                v.innerHTML = `<span class="badge ${data.risk}">${data.risk.toUpperCase()}</span>score ${data.score}, ML ${Math.round((data.ml_prob||0)*100)}%${reasons}`;
             }
-        }
-
-        run();
+        })();
     </script>
 </body>
 </html>
