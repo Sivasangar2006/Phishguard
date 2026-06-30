@@ -25,7 +25,7 @@ if (!PG_DETECTOR) {
 const SITE_CONFIG = {
     "web.whatsapp.com": {
         name: "WhatsApp",
-        selector: "span.selectable-text"
+        selector: 'div.copyable-text[data-pre-plain-text]'
     },
     "twitter.com": {
         name: "Twitter",
