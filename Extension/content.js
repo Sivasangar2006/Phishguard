@@ -160,6 +160,9 @@ function handleResponse(data, node, originalText, sourceName) {
 
     if (!data || !data.risk) return;
 
+    // Show the top-of-page verdict banner with a confidence score.
+    showBanner(data.risk, data.confidence, data.reasons, originalText);
+
     if (data.risk === "high") {
 
         node.style.borderBottom = "4px solid red";
@@ -183,6 +186,83 @@ function handleResponse(data, node, originalText, sourceName) {
             node.style.borderBottom = "none";
             node.style.backgroundColor = "transparent";
         }, 3000);
+    }
+}
+
+// =====================================
+// 8️⃣ ⃣a VERDICT BANNER (top-of-page popup with confidence)
+// =====================================
+
+const BANNER_STYLES = {
+    high:   { bg: "#c5221f", icon: "🚨", title: "Phishing attempt detected" },
+    medium: { bg: "#b06000", icon: "⚠️", title: "Suspicious message" },
+    low:    { bg: "#137333", icon: "✅", title: "Looks legitimate" },
+};
+
+let _bannerTimer = null;
+let _bannerRisk = null;
+
+function ensureBanner() {
+    let el = document.getElementById("phishguard-banner");
+    if (el) return el;
+    el = document.createElement("div");
+    el.id = "phishguard-banner";
+    el.style.cssText =
+        "position:fixed;top:12px;left:50%;transform:translateX(-50%);" +
+        "z-index:2147483647;max-width:560px;width:calc(100% - 24px);" +
+        "padding:12px 16px;border-radius:10px;color:#fff;" +
+        "font-family:system-ui,'Segoe UI',Roboto,sans-serif;font-size:14px;" +
+        "box-shadow:0 6px 24px rgba(0,0,0,.25);display:none;gap:10px;" +
+        "align-items:flex-start;line-height:1.4;";
+    (document.body || document.documentElement).appendChild(el);
+    return el;
+}
+
+function showBanner(risk, confidence, reasons) {
+    const cfg = BANNER_STYLES[risk];
+    if (!cfg) return;
+
+    // Don't let a later "legitimate" message overwrite a live phishing alert.
+    if (_bannerRisk === "high" && risk !== "high") return;
+
+    const conf = typeof confidence === "number" ? confidence : 0;
+    const pct = Math.round((risk === "low" ? 1 - conf : conf) * 100);
+    const tail = risk === "low" ? "% confidence it's safe" : "% confidence it's phishing";
+
+    const el = ensureBanner();
+    el.style.background = cfg.bg;
+    el.style.display = "flex";
+    el.replaceChildren();
+
+    const icon = document.createElement("div");
+    icon.style.cssText = "font-size:20px;line-height:1";
+    icon.textContent = cfg.icon;
+
+    const body = document.createElement("div");
+    body.style.flex = "1";
+    const head = document.createElement("div");
+    head.style.fontWeight = "700";
+    head.textContent = `${cfg.title} — ${pct}${tail}`;   // textContent = no injection
+    body.appendChild(head);
+    if (reasons && reasons.length) {
+        const sub = document.createElement("div");
+        sub.style.cssText = "font-size:12px;opacity:.92;margin-top:3px";
+        sub.textContent = reasons.slice(0, 2).join("  ·  ");
+        body.appendChild(sub);
+    }
+
+    const close = document.createElement("div");
+    close.style.cssText = "cursor:pointer;font-size:18px;opacity:.85;padding:0 2px";
+    close.textContent = "×";
+    close.onclick = () => { el.style.display = "none"; _bannerRisk = null; };
+
+    el.append(icon, body, close);
+    _bannerRisk = risk;
+
+    clearTimeout(_bannerTimer);
+    // Auto-dismiss the "safe" banner; keep warnings until dismissed.
+    if (risk === "low") {
+        _bannerTimer = setTimeout(() => { el.style.display = "none"; _bannerRisk = null; }, 4000);
     }
 }
 

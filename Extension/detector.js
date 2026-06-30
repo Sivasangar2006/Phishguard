@@ -32,7 +32,7 @@
         const payload = pageUrl ? text + "\n" + pageUrl : text;
         const h = H.scoreText(payload);
         const mlProb = scorer.proba(payload);
-        const { risk } = fuse(h, mlProb);
+        const { risk, fused } = fuse(h, mlProb);
         const reasons = h.reasons.slice();
         reasons.push("ML classifier: " + Math.round(mlProb * 100) + "% phishing probability");
         return {
@@ -40,6 +40,7 @@
           reasons: reasons.slice(0, 6),
           score: h.score,
           ml_prob: Math.round(mlProb * 1000) / 1000,
+          confidence: Math.round(fused * 1000) / 1000,   // fused phishing likelihood 0..1
         };
       },
     };

@@ -70,4 +70,10 @@ with sync_playwright() as p:
     print(f"content.js decorated {len(rows)} .msg nodes -> {OUT}\n")
     for r in rows:
         print(f"  {r['label'][:34]:34s} | width {r['width']:>4} | {band(r['color'])}")
+
+    banner = page.eval_on_selector_all(
+        "#phishguard-banner",
+        "els => els.length ? els[0].innerText.replace(/\\n/g,' | ') : '(no banner)'",
+    )
+    print(f"\ntop banner text: {banner}")
     browser.close()
