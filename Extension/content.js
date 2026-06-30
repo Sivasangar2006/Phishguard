@@ -28,6 +28,13 @@ const SITE_CONFIG = {
     "linkedin.com": {
         name: "LinkedIn",
         selector: "div.feed-shared-update-v2__description"
+    },
+    // Dev-only: local test harness (extension-test.html). Lets the real
+    // content script run against planted messages. Harmless in production
+    // since no real site is served from localhost with .msg nodes.
+    "localhost": {
+        name: "TestHarness",
+        selector: ".msg"
     }
 };
 
@@ -140,7 +147,7 @@ async function triggerScan(text, node, sourceName) {
 
         const data = await response.json();
 
-        handleResponse(data, node, text);
+        handleResponse(data, node, text, sourceName);
 
     } catch (error) {
         console.error("⚠ Backend unreachable. Is FastAPI running?");
@@ -152,7 +159,7 @@ async function triggerScan(text, node, sourceName) {
 // 8️⃣ HANDLE BACKEND RESPONSE
 // =====================================
 
-function handleResponse(data, node, originalText) {
+function handleResponse(data, node, originalText, sourceName) {
 
     if (!data || !data.risk) return;
 
@@ -160,14 +167,16 @@ function handleResponse(data, node, originalText) {
 
         node.style.borderBottom = "4px solid red";
         node.style.backgroundColor = "rgba(255, 0, 0, 0.2)";
-        node.title = `⚠️ PHISHING DETECTED: ${data.reasons?.join(", ") || ""}`;
+        node.title = `⚠️ PHISHING DETECTED: ${data.reasons?.join(", ") || ""}\n(Alt+Click to report)`;
+        markReportable(node, originalText, sourceName);
 
         console.warn("🚨 PHISHING DETECTED:", originalText.substring(0, 40));
 
     } else if (data.risk === "medium") {
 
         node.style.borderBottom = "3px solid orange";
-        node.title = `⚠ Suspicious: ${data.reasons?.join(", ") || ""}`;
+        node.title = `⚠ Suspicious: ${data.reasons?.join(", ") || ""}\n(Alt+Click to report)`;
+        markReportable(node, originalText, sourceName);
 
     } else {
 
@@ -179,6 +188,55 @@ function handleResponse(data, node, originalText) {
         }, 3000);
     }
 }
+
+// =====================================
+// 8️⃣ ⃣b USER REPORTING (crowdsourced data — the real-data moat)
+// =====================================
+// Non-intrusive: Alt+Click a flagged message to report it. The backend
+// redacts all PII before storing, so nothing sensitive leaves as raw text.
+
+function markReportable(node, originalText, sourceName) {
+    node.dataset.pgReport = originalText;
+    node.dataset.pgSource = sourceName || "Unknown";
+    node.style.cursor = "context-menu";
+}
+
+async function reportMessage(text, sourceName, userLabel) {
+    try {
+        const res = await fetch("http://localhost:8000/report", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                text: text,
+                source: sourceName,
+                url: window.location.href,
+                user_label: userLabel || null
+            })
+        });
+        const data = await res.json();
+        console.log("🛡️ PhishGuard report sent. Redacted:", data.redaction);
+        return true;
+    } catch (e) {
+        console.error("⚠ Could not send report. Is the backend running?");
+        return false;
+    }
+}
+
+// One delegated listener for the whole page (added once).
+document.addEventListener("click", (e) => {
+    if (!e.altKey) return;
+    const node = e.target.closest?.("[data-pg-report]");
+    if (!node) return;
+    e.preventDefault();
+    reportMessage(node.dataset.pgReport, node.dataset.pgSource, "phish").then((ok) => {
+        if (ok) {
+            const prev = node.style.outline;
+            node.style.outline = "2px solid #137333";
+            node.title = "✅ Reported to PhishGuard (PII redacted)";
+            setTimeout(() => { node.style.outline = prev; }, 1500);
+        }
+    });
+}, true);
 
 // =====================================
 // 9️⃣ WEBSITE PHISHING DETECTION (LOGIN PAGES)

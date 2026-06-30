@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            width: 260px; margin: 0;
+            font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+            color: #1a1a1a; background: #fff;
+        }
+        header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 12px 14px; border-bottom: 1px solid #eee;
+        }
+        header .logo { font-size: 18px; }
+        header .title { font-weight: 700; font-size: 15px; }
+        .body { padding: 12px 14px; }
+        .row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13px; }
+        .dot { width: 9px; height: 9px; border-radius: 50%; background: #bbb; flex: none; }
+        .dot.ok { background: #137333; }
+        .dot.bad { background: #c5221f; }
+        .muted { color: #777; font-size: 12px; }
+        .tiers { margin-top: 6px; padding-top: 8px; border-top: 1px solid #f0f0f0; }
+        .tiers div { font-size: 12.5px; color: #444; margin: 3px 0; }
+        code { background: #f4f4f4; padding: 1px 4px; border-radius: 3px; }
+        a { color: #1a73e8; text-decoration: none; }
+        .hint { margin-top: 10px; font-size: 11.5px; color: #888; line-height: 1.4; }
+    </style>
+</head>
+<body>
+    <header>
+        <span class="logo">🛡️</span>
+        <span class="title">PhishGuard</span>
+    </header>
+    <div class="body">
+        <div class="row">
+            <span id="dot" class="dot"></span>
+            <span id="status">Checking backend…</span>
+        </div>
+        <div id="tiers" class="tiers" hidden>
+            <div>Tier 0 (heuristics): <span id="t0">—</span></div>
+            <div>Tier 1 (ML model): <span id="t1">—</span></div>
+        </div>
+        <div class="hint">
+            Suspicious messages get a colored underline on supported sites.
+            <b>Alt+Click</b> a flagged message to report it (PII auto-redacted).
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>

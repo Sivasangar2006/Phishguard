@@ -1,0 +1,145 @@
+{
+  "_comment": "Expanded scam archetypes for PhishGuard Tier 1. Authored inline (the multi-agent expansion workflow stalled on a session interrupt). Synthetic templates for a DEFENSIVE detector; {phish_url} is always a placeholder, never a real link. Slots: bank amount acct name otp phone phish_url legit_url agency app.",
+  "archetypes": [
+    {
+      "category": "digital_arrest",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "This is {agency}. Your bank account is linked to a money-laundering case. You are under digital arrest. Stay on this video call and transfer Rs {amount} to the verification account or be arrested: {phish_url}"},
+        {"lang": "en", "label": 1, "text": "{agency} notice: a parcel with illegal items was seized in your name. Call {phone} immediately and do NOT disconnect. Pay Rs {amount} for case clearance: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "{agency} se baat kar rahe hain. Aapke naam par money laundering ka case hai. Aap digital arrest me hain, video call mat kaatiye aur Rs {amount} verification account me bhejiye: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "यह {agency} है। आपके खाते पर मनी लॉन्ड्रिंग का मामला दर्ज है। आप डिजिटल अरेस्ट में हैं, वीडियो कॉल न काटें और रु {amount} वेरिफिकेशन खाते में भेजें: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "இது {agency}. உங்கள் பெயரில் பணமோசடி வழக்கு பதிவாகியுள்ளது. நீங்கள் டிஜிட்டல் கைது செய்யப்பட்டுள்ளீர்கள், வீடியோ அழைப்பை துண்டிக்காதீர்கள், ரூ {amount} அனுப்பவும்: {phish_url}"}
+      ]
+    },
+    {
+      "category": "instant_loan_app",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "Congrats! Your loan of Rs {amount} is pre-approved with zero documents. Download {app} and get instant cash: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "Badhai! Aapka Rs {amount} ka loan bina document ke approve ho gaya. {app} download karein aur turant paisa payein: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "बधाई! आपका रु {amount} का लोन बिना दस्तावेज़ के मंज़ूर हो गया। {app} डाउनलोड करें और तुरंत पैसे पाएं: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "வாழ்த்துக்கள்! ஆவணம் இல்லாமல் ரூ {amount} கடன் முன்அனுமதி பெற்றது. {app} பதிவிறக்கம் செய்து உடனே பணம் பெறுங்கள்: {phish_url}"}
+      ]
+    },
+    {
+      "category": "courier_parcel_scam",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "Your FedEx parcel is held at customs and contains banned items. Pay Rs {amount} clearance within 24 hours or face legal action: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "Aapka courier customs me ruka hai, isme banned saman hai. 24 ghante me Rs {amount} clearance bhare warna legal action hoga: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "आपका कूरियर कस्टम में रुका है और इसमें प्रतिबंधित सामान है। 24 घंटे में रु {amount} क्लीयरेंस भरें वरना कानूनी कार्रवाई होगी: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "உங்கள் பார்சல் சுங்கத்தில் தடைசெய்யப்பட்ட பொருட்களுடன் நிறுத்தப்பட்டுள்ளது. 24 மணி நேரத்தில் ரூ {amount} செலுத்தவும் இல்லையெனில் சட்ட நடவடிக்கை: {phish_url}"}
+      ]
+    },
+    {
+      "category": "upi_collect_scam",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "To RECEIVE your refund of Rs {amount}, approve the UPI request and enter your UPI PIN now: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "Apna Rs {amount} refund paane ke liye UPI request approve karein aur UPI PIN daalein: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "अपना रु {amount} रिफंड पाने के लिए UPI रिक्वेस्ट अप्रूव करें और UPI पिन डालें: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "உங்கள் ரூ {amount} திரும்பப் பெற UPI கோரிக்கையை அங்கீகரித்து UPI பின்னை உள்ளிடவும்: {phish_url}"}
+      ]
+    },
+    {
+      "category": "fake_customer_care",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "{bank} support here. We noticed a failed transaction. To reverse it, share the OTP {otp} or install our app from {phish_url}. Call {phone}."},
+        {"lang": "hi_rom", "label": 1, "text": "{bank} support se. Aapka transaction fail hua hai. Reverse karne ke liye OTP {otp} batayein ya {phish_url} se app install karein. Call {phone}."},
+        {"lang": "hi_dev", "label": 1, "text": "{bank} सपोर्ट से। आपका लेनदेन विफल हुआ है। इसे वापस करने के लिए OTP {otp} बताएं या {phish_url} से ऐप इंस्टॉल करें। कॉल {phone}।"},
+        {"lang": "ta", "label": 1, "text": "{bank} ஆதரவு. உங்கள் பரிவர்த்தனை தோல்வியடைந்தது. மாற்ற OTP {otp} பகிரவும் அல்லது {phish_url} இல் இருந்து செயலியை நிறுவவும். {phone} ஐ அழைக்கவும்."}
+      ]
+    },
+    {
+      "category": "investment_crypto",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "Join our VIP group and earn 200% returns! Deposit Rs {amount} in {app} and double your money in 7 days: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "Hamare VIP group me judein, 200% return paayein! {app} me Rs {amount} jama karein aur 7 din me paisa double: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "हमारे VIP ग्रुप में जुड़ें, 200% रिटर्न पाएं! {app} में रु {amount} जमा करें और 7 दिन में पैसा डबल: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "எங்கள் VIP குழுவில் சேருங்கள், 200% லாபம்! {app} இல் ரூ {amount} டெபாசிட் செய்து 7 நாட்களில் பணத்தை இரட்டிப்பாக்குங்கள்: {phish_url}"}
+      ]
+    },
+    {
+      "category": "reward_points_expiry",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "Your {bank} reward points worth Rs {amount} expire TODAY. Redeem instantly here: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "Aapke {bank} reward points jinki value Rs {amount} hai aaj expire ho rahe hain. Abhi redeem karein: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "आपके {bank} रिवॉर्ड पॉइंट्स जिनकी कीमत रु {amount} है आज समाप्त हो रहे हैं। अभी रिडीम करें: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "ரூ {amount} மதிப்புள்ள உங்கள் {bank} வெகுமதி புள்ளிகள் இன்று காலாவதியாகின்றன. இப்போது மீட்டெடுக்கவும்: {phish_url}"}
+      ]
+    },
+    {
+      "category": "utility_kyc",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "Your electricity connection will be disconnected tonight as your KYC is pending. Update now or call {phone}: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "Aapka bijli connection aaj raat kat jayega kyunki KYC pending hai. Abhi update karein ya {phone} par call karein: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "आपका बिजली कनेक्शन आज रात कट जाएगा क्योंकि KYC लंबित है। अभी अपडेट करें या {phone} पर कॉल करें: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "உங்கள் KYC நிலுவையில் இருப்பதால் இன்றிரவு மின் இணைப்பு துண்டிக்கப்படும். இப்போது புதுப்பிக்கவும் அல்லது {phone} ஐ அழைக்கவும்: {phish_url}"}
+      ]
+    },
+    {
+      "category": "marketplace_qr_scam",
+      "templates": [
+        {"lang": "en", "label": 1, "text": "I am an Army officer interested in your OLX item. I will send Rs {amount} via this QR — just scan and approve to receive the money: {phish_url}"},
+        {"lang": "hi_rom", "label": 1, "text": "Main Army officer hoon, aapka OLX saman chahiye. Rs {amount} QR se bhej raha hoon, receive karne ke liye scan karke approve karein: {phish_url}"},
+        {"lang": "hi_dev", "label": 1, "text": "मैं आर्मी अफसर हूं, आपका OLX सामान चाहिए। रु {amount} QR से भेज रहा हूं, पाने के लिए स्कैन करके अप्रूव करें: {phish_url}"},
+        {"lang": "ta", "label": 1, "text": "நான் ராணுவ அதிகாரி, உங்கள் OLX பொருள் வேண்டும். ரூ {amount} QR மூலம் அனுப்புகிறேன், பெற ஸ்கேன் செய்து அங்கீகரிக்கவும்: {phish_url}"}
+      ]
+    },
+    {
+      "category": "upi_legit",
+      "templates": [
+        {"lang": "en", "label": 0, "text": "You have received Rs {amount} from {name} via UPI. -{bank}"},
+        {"lang": "hi_rom", "label": 0, "text": "Aapko {name} se UPI ke through Rs {amount} mile hain. -{bank}"},
+        {"lang": "hi_dev", "label": 0, "text": "आपको {name} से UPI के माध्यम से रु {amount} प्राप्त हुए हैं। -{bank}"}
+      ]
+    },
+    {
+      "category": "ecommerce_legit",
+      "templates": [
+        {"lang": "en", "label": 0, "text": "Your order is out for delivery. Share OTP {otp} with the delivery agent to receive it. Track: {legit_url}"},
+        {"lang": "hi_rom", "label": 0, "text": "Aapka order delivery ke liye nikal gaya hai. Delivery agent ko OTP {otp} dein. Track: {legit_url}"},
+        {"lang": "hi_dev", "label": 0, "text": "आपका ऑर्डर डिलीवरी के लिए निकल गया है। डिलीवरी एजेंट को OTP {otp} दें। ट्रैक करें: {legit_url}"}
+      ]
+    },
+    {
+      "category": "govt_service_legit",
+      "templates": [
+        {"lang": "en", "label": 0, "text": "{otp} is your OTP for DigiLocker login. Valid for 10 minutes. Do not share it. {legit_url}"},
+        {"lang": "hi_rom", "label": 0, "text": "{otp} aapka DigiLocker login OTP hai. 10 minute valid. Kisi ko na batayein. {legit_url}"},
+        {"lang": "hi_dev", "label": 0, "text": "{otp} आपका DigiLocker लॉगिन OTP है। 10 मिनट के लिए वैध। किसी को न बताएं। {legit_url}"}
+      ]
+    },
+    {
+      "category": "everyday_legit",
+      "templates": [
+        {"lang": "en", "label": 0, "text": "Hi, your appointment with Dr. {name} is confirmed for Monday 11 AM at the clinic."},
+        {"lang": "en", "label": 0, "text": "Team, the standup is moved to 4 PM today. Please update your tickets before then."},
+        {"lang": "en", "label": 0, "text": "Reminder: PTA meeting for class 6B is tomorrow at 10 AM in the school hall."},
+        {"lang": "en", "label": 0, "text": "Your order has been delivered. Hope you enjoyed it! Please rate your experience."},
+        {"lang": "en", "label": 0, "text": "Happy birthday {name}! Wishing you a great year ahead from all of us at the office."},
+        {"lang": "hi_rom", "label": 0, "text": "{name}, kal subah 10 baje meeting hai, time par aa jana."},
+        {"lang": "hi_rom", "label": 0, "text": "Aaj shaam ghar pe dinner pe aa rahe ho na?"},
+        {"lang": "hi_rom", "label": 0, "text": "Doctor ne appointment Monday 11 baje confirm kiya hai."},
+        {"lang": "hi_rom", "label": 0, "text": "Bachche ki school me kal PTA meeting hai subah 10 baje."},
+        {"lang": "hi_dev", "label": 0, "text": "{name}, कल सुबह 10 बजे मीटिंग है, समय पर आ जाना।"},
+        {"lang": "hi_dev", "label": 0, "text": "आज शाम घर पर डिनर पर आ रहे हो ना?"},
+        {"lang": "hi_dev", "label": 0, "text": "डॉक्टर ने सोमवार 11 बजे अपॉइंटमेंट कन्फर्म किया है।"},
+        {"lang": "hi_dev", "label": 0, "text": "बच्चे की स्कूल में कल पीटीए मीटिंग है सुबह 10 बजे।"},
+        {"lang": "ta", "label": 0, "text": "{name}, நாளை காலை 10 மணிக்கு கூட்டம் உள்ளது, சரியான நேரத்தில் வாருங்கள்."},
+        {"lang": "ta", "label": 0, "text": "இன்று மாலை வீட்டில் இரவு உணவுக்கு வருகிறீர்களா?"},
+        {"lang": "ta", "label": 0, "text": "மருத்துவர் திங்கள் 11 மணிக்கு சந்திப்பை உறுதி செய்துள்ளார்."}
+      ]
+    },
+    {
+      "category": "tamil_coverage",
+      "templates": [
+        {"lang": "ta", "label": 1, "category": "kyc", "text": "உங்கள் {bank} கணக்கு முடக்கப்படும். உடனே KYC புதுப்பிக்கவும் இல்லையெனில் கணக்கு நிரந்தரமாக மூடப்படும்: {phish_url}"},
+        {"lang": "ta", "label": 1, "category": "otp_scam", "text": "{bank} பாதுகாப்பு: உங்கள் கணக்கை சரிபார்க்க OTP {otp} ஐ உடனே பகிரவும் இல்லையெனில் முடக்கப்படும்."},
+        {"lang": "ta", "label": 1, "category": "lottery", "text": "வாழ்த்துக்கள்! நீங்கள் {bank} லக்கி டிராவில் ரூ {amount} வென்றுள்ளீர்கள். இப்போது claim செய்யவும்: {phish_url}"},
+        {"lang": "ta", "label": 1, "category": "refund", "text": "உங்கள் ரூ {amount} திரும்பப் பணம் நிலுவையில் உள்ளது. பெற வங்கி விவரங்களை சரிபார்க்கவும்: {phish_url}"},
+        {"lang": "ta", "label": 0, "category": "txn_alert", "text": "உங்கள் கணக்கு {acct} இல் ரூ {amount} வரவு வைக்கப்பட்டது. இருப்பு புதுப்பிக்கப்பட்டது. -{bank}"},
+        {"lang": "ta", "label": 0, "category": "otp_legit", "text": "{otp} உங்கள் {bank} உள்நுழைவுக்கான OTP. யாருடனும் பகிர வேண்டாம். -{bank}"},
+        {"lang": "ta", "label": 0, "category": "promo", "text": "{bank} சலுகை! இன்று எலெக்ட்ரானிக்ஸ் பொருட்களில் தள்ளுபடி. இப்போது வாங்குங்கள்: {legit_url}"},
+        {"lang": "ta", "label": 0, "category": "chat", "text": "ஹாய் {name}, நாளை மதியம் ஒன்றாக சந்திக்கலாமா?"}
+      ]
+    }
+  ]
+}

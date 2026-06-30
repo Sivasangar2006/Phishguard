@@ -1,0 +1,9 @@
+fastapi>=0.110
+uvicorn[standard]>=0.27
+pydantic>=2.6
+
+# Tier 1 ML (optional): needed to load Model/classifier.joblib at runtime.
+# Without these, the backend still boots and runs Tier 0 heuristics alone
+# (/health will report tier1 as unavailable).
+scikit-learn>=1.3
+joblib>=1.3

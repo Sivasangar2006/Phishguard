@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# PhishGuard runtime data (crowdsourced reports — redacted, but runtime only)
+Backend/data/
+
+# Local render/screenshot artifacts
+Backend/*.png
+
+# Trained model artifact is regenerable via Model/train.py; keep it out of git
+# (uncomment if you prefer not to version the binary)
+# Model/classifier.joblib
+
+# Local Claude Code tooling config (preview launch config, etc.)
+.claude/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

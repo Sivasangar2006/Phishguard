@@ -7,6 +7,10 @@
         "activeTab",
         "scripting"
     ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "PhishGuard"
+    },
     "host_permissions": [
         "<all_urls>",
         "http://localhost:8000/*"

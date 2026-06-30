@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard — Literal content.js Test</title>
+    <style>
+        body {
+            font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+            max-width: 760px; margin: 24px auto; padding: 0 16px;
+            color: #1a1a1a; background: #fafafa;
+        }
+        h1 { font-size: 21px; margin-bottom: 2px; }
+        .sub { color: #666; font-size: 13px; margin-top: 0; }
+        .card {
+            background: #fff; border: 1px solid #e3e3e3; border-radius: 10px;
+            padding: 14px 16px; margin-bottom: 12px;
+        }
+        .label { font-size: 12px; color: #888; margin-bottom: 6px; }
+        /* The real content.js matches `.msg`, reads innerText, and decorates
+           the node's border. This page never styles or scans it itself. */
+        .msg { font-size: 15px; line-height: 1.5; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>🛡️ PhishGuard — Literal <code>content.js</code> Test</h1>
+    <p class="sub">
+        This page only injects <code>.msg</code> nodes (dynamically, to trip the
+        MutationObserver). All scanning and border-painting is done by the real
+        <code>content.js</code> running against <code>localhost</code>.
+    </p>
+
+    <div id="feed"></div>
+
+    <script>
+        // Planted cases. NO scanning here — content.js handles everything.
+        const CASES = [
+            ["Legit SBI credit (Hindi+Eng)", "भारतीय स्टेट बैंक की ओर से शुभकामनाएं ! Greetings from SBI ! Your A/C XXXXX3917 has credit of Rs 2.00. Avl Bal Rs 3,894.80. Please do not reply. -SBI"],
+            ["Normal chat", "Hey, are we still meeting for lunch at 1pm tomorrow?"],
+            ["Romanized Hindi OTP scam", "URGENT! Aapka SBI khata band ho jayega. Turant KYC update karo aur OTP batao: https://sbi-verify.xyz/login"],
+            ["Devanagari KYC scam", "प्रिय ग्राहक, आपका SBI खाता बंद हो जाएगा। तुरंत KYC update करें और OTP बताएं: http://sbi-verify.xyz/login"],
+            ["Tamil lottery bait", "வாழ்த்துக்கள்! நீங்கள் ஒரு பரிசு வென்றுள்ளீர்கள். claim now: http://prize.top/redeem"],
+            ["HDFC impersonation", "Dear customer, your HDFC account is suspended. Verify your account immediately with your CVV and PIN."],
+        ];
+
+        // Expose injection so the test driver can call it AFTER content.js
+        // has loaded and its observer is live. Nodes are added one-by-one to
+        // mimic a real chat/inbox stream (each triggers the observer).
+        window.injectMessages = function () {
+            const feed = document.getElementById("feed");
+            CASES.forEach(([label, text], i) => {
+                setTimeout(() => {
+                    const card = document.createElement("div");
+                    card.className = "card";
+                    const lab = document.createElement("div");
+                    lab.className = "label";
+                    lab.textContent = label;
+                    const msg = document.createElement("div");
+                    msg.className = "msg";
+                    msg.textContent = text;
+                    card.append(lab, msg);
+                    feed.appendChild(card);
+                }, i * 120);
+            });
+        };
+    </script>
+</body>
+</html>
