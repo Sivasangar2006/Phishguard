@@ -44,7 +44,7 @@
   },
   {
    "text": "This is CBI. You are under digital arrest, transfer Rs 50000 now",
-   "risk": "medium",
+   "risk": "low",
    "score": 16,
    "ml": 0.51
   },
@@ -62,7 +62,7 @@
   },
   {
    "text": "Ghar baithe rozana 5000 kamaiye, abhi register karein",
-   "risk": "medium",
+   "risk": "low",
    "score": 14,
    "ml": 0.739
   },

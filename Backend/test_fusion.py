@@ -22,8 +22,10 @@ CASES = [
     ("strong scam + lookalike",    R(46, True),        0.97, "high"),
     # Structural override: a look-alike URL alone is near-certain even if ML is unsure.
     ("structural override",        R(46, True),        0.10, "high"),
-    # ML catches a heuristic-quiet scam -> at least a medium warning.
-    ("heuristic-quiet ML catch",   R(14),              0.61, "medium"),
+    # Borderline ML with no real heuristic signal is now SUPPRESSED for
+    # precision (it overlaps with legit text); only very-confident ML flags solo.
+    ("weak ML, no signal -> low",  R(14),              0.61, "low"),
+    ("very confident ML alone",    R(0),               0.93, "high"),
     # Model absent -> Tier 0 only.
     ("no model, strong heuristic", R(60),              None, "high"),
     ("no model, clean",            R(0),               None, "low"),

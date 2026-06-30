@@ -13,13 +13,27 @@
   const T1 = root.PhishGuardTier1;
 
   // Fusion constants — keep in sync with Backend/main.py.
-  const HIGH_BAND = 0.70, MEDIUM_BAND = 0.40;
-  const W_ML = 0.65, W_HEURISTIC = 0.35, STRUCTURAL_FLOOR = 0.75;
+  // Tuned for PRECISION: the synthetic-trained ML is noisy on real legit
+  // messages (gives scam-adjacent text ~0.6), so we trust the high-precision
+  // heuristics and demand strong ML confidence before flagging on ML alone.
+  const HIGH_BAND = 0.78, MEDIUM_BAND = 0.58;
+  const W_ML = 0.55, W_HEURISTIC = 0.45, STRUCTURAL_FLOOR = 0.85;
+  const ML_SOLO_HIGH = 0.90;   // ML alone (no heuristic) must be very sure
 
   function fuse(result, mlProb) {
     const hConf = Math.min(result.score / H.HIGH_THRESHOLD, 1.0);
     let fused = mlProb == null ? hConf : W_ML * mlProb + W_HEURISTIC * hConf;
+
+    // High-precision structural URL signal -> near-certain phishing.
     if (result.structural) fused = Math.max(fused, STRUCTURAL_FLOOR);
+    // Very confident ML (rare for legit) can flag on its own.
+    if (mlProb != null && mlProb >= ML_SOLO_HIGH) fused = Math.max(fused, 0.80);
+    // If the rules find NOTHING scammy, damp a merely-suspicious ML so an
+    // ordinary legit message isn't flagged on the model's noise alone.
+    if (result.score === 0 && mlProb != null && mlProb < ML_SOLO_HIGH) {
+      fused = Math.min(fused, mlProb * 0.6);
+    }
+
     const risk = fused >= HIGH_BAND ? "high" : fused >= MEDIUM_BAND ? "medium" : "low";
     return { risk, fused };
   }

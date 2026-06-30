@@ -93,11 +93,16 @@ class ReportResponse(BaseModel):
 # look-alike domain, '@'-trick) still override upward -- those almost never
 # false-positive.
 
-HIGH_BAND = 0.70
-MEDIUM_BAND = 0.40
-W_ML = 0.65          # trust the trained model more than raw keyword counts
-W_HEURISTIC = 0.35
-STRUCTURAL_FLOOR = 0.75   # a look-alike/punycode/IP URL alone is near-certain
+# Tuned for PRECISION: the synthetic-trained ML is noisy on real legit messages
+# (gives scam-adjacent text ~0.6), so trust the high-precision heuristics and
+# demand strong ML confidence before flagging on ML alone. Keep in sync with
+# Extension/detector.js.
+HIGH_BAND = 0.78
+MEDIUM_BAND = 0.58
+W_ML = 0.55
+W_HEURISTIC = 0.45
+STRUCTURAL_FLOOR = 0.85    # a look-alike/punycode/IP URL alone is near-certain
+ML_SOLO_HIGH = 0.90        # ML alone (no heuristic) must be very sure to flag
 
 
 def fuse(result, ml_prob: float | None) -> tuple[str, float]:
@@ -109,6 +114,12 @@ def fuse(result, ml_prob: float | None) -> tuple[str, float]:
 
     if result.structural:
         fused = max(fused, STRUCTURAL_FLOOR)
+    if ml_prob is not None and ml_prob >= ML_SOLO_HIGH:
+        fused = max(fused, 0.80)
+    # No heuristic signal at all -> damp a merely-suspicious ML so ordinary
+    # legit messages aren't flagged on the model's noise alone.
+    if result.score == 0 and ml_prob is not None and ml_prob < ML_SOLO_HIGH:
+        fused = min(fused, ml_prob * 0.6)
 
     if fused >= HIGH_BAND:
         return "high", fused
