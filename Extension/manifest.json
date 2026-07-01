@@ -6,6 +6,9 @@
     "permissions": [
         "storage"
     ],
+    "host_permissions": [
+        "http://localhost:11434/*"
+    ],
     "action": {
         "default_popup": "popup.html",
         "default_title": "PhishGuard"
@@ -21,6 +24,7 @@
                 "heuristics.js",
                 "redact.js",
                 "detector.js",
+                "llm.js",
                 "content.js"
             ],
             "run_at": "document_idle"

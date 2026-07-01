@@ -218,7 +218,7 @@ function ensureBanner() {
     return el;
 }
 
-function showBanner(risk, confidence, reasons) {
+function showBanner(risk, confidence, reasons, text) {
     const cfg = BANNER_STYLES[risk];
     if (!cfg) return;
 
@@ -249,6 +249,36 @@ function showBanner(risk, confidence, reasons) {
         sub.style.cssText = "font-size:12px;opacity:.92;margin-top:3px";
         sub.textContent = reasons.slice(0, 2).join("  ·  ");
         body.appendChild(sub);
+    }
+
+    // Optional on-demand LLM "second opinion" (local Ollama).
+    if (typeof PhishGuardLLM !== "undefined" && text) {
+        const aiLine = document.createElement("div");
+        aiLine.style.cssText = "font-size:12.5px;margin-top:6px;display:none";
+        const btn = document.createElement("button");
+        btn.textContent = "🔍 Analyze with AI";
+        btn.style.cssText = "margin-top:8px;background:rgba(255,255,255,.2);color:#fff;" +
+            "border:1px solid rgba(255,255,255,.45);border-radius:6px;padding:4px 10px;" +
+            "font-size:12px;cursor:pointer";
+        btn.onclick = async () => {
+            clearTimeout(_bannerTimer);        // keep the banner open while analyzing
+            btn.disabled = true;
+            btn.textContent = "Analyzing with local AI… (~6s)";
+            aiLine.style.display = "block";
+            aiLine.textContent = "";
+            try {
+                const r = await PhishGuardLLM.analyze(text);
+                const v = String(r.verdict || "").toLowerCase();
+                const c = Math.round((r.confidence || 0) * 100);
+                aiLine.textContent = `🤖 AI (${PhishGuardLLM.MODEL}): ${v} · ${c}% · ${r.reason || ""}`;
+                btn.textContent = "✓ Analyzed with AI";
+            } catch (e) {
+                aiLine.textContent = "AI unavailable — is Ollama running? " + e.message;
+                btn.disabled = false;
+                btn.textContent = "🔍 Retry AI";
+            }
+        };
+        body.append(btn, aiLine);
     }
 
     const close = document.createElement("div");
