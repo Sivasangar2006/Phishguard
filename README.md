@@ -118,6 +118,29 @@ rules miss. See [`Model/README.md`](Model/README.md) for the methodology.
   (not full URL) is kept. See [`Backend/redact.py`](Backend/redact.py).
 - Crowdsourced reports (`Backend/data/`) are git-ignored.
 
+## Optional: Analyze with AI (local LLM)
+
+The verdict banner has an **"Analyze with AI"** button that sends the message to a
+**local** LLM (via [Ollama](https://ollama.com)) for a reasoned second opinion —
+nothing leaves the device. The on-device heuristics + ML stay the *primary*
+detector (instant, 0 false positives on the test set); the LLM is an optional,
+on-demand explainer.
+
+Setup:
+```bash
+ollama pull qwen2.5:3b          # ~2 GB, fits alongside a browser
+# allow the extension's page origin to reach Ollama, then restart Ollama:
+setx OLLAMA_ORIGINS "*"
+```
+Model is set in [`Extension/llm.js`](Extension/llm.js) (`MODEL`). `qwen2.5:3b`
+runs comfortably next to Chrome; `aya-expanse:8b` is more accurate on Indic text
+but needs ~6 GB free RAM (it OOMs on a 16 GB machine with a browser open).
+
+**Honest note:** in testing, the small local LLM was *not* more accurate than the
+tuned on-device model (qwen2.5:3b: 2/12 false positives, ~6 s/message; the
+on-device model: 0/18, instant). So the LLM is a bonus "explain-why" feature, not
+a replacement — a good example of measuring before committing to an architecture.
+
 ## Roadmap
 
 1. **Real data** — collect & label real vernacular scams (the moat). See the
