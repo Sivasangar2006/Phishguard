@@ -7,6 +7,12 @@ Hindi, Tamil, Telugu, Bengali, and code-mixed "Hinglish". PhishGuard is a browse
 extension that flags scam messages **in the languages people actually get scammed
 in**, doing the work locally and escalating rarely.
 
+![PhishGuard flagging a Hindi phishing message on-device, with a confidence banner and an optional local-LLM explanation](docs/demo.gif)
+
+*Legit messages pass silently; a Romanized-Hindi SBI phishing attempt is flagged
+with a confidence score, and the optional "Analyze with AI" button adds a local-LLM
+explanation — all on-device.*
+
 > **Status:** working end-to-end MVP — and detection now runs **fully
 > on-device** (no backend). The trained model is exported to JS and runs in the
 > browser, so the extension is self-contained and installable. The FastAPI

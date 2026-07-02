@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard Demo</title>
+    <style>
+        body {
+            margin: 0; background: #e9edf0; min-height: 100vh;
+            font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+            padding-top: 90px;   /* room for the alert banner */
+        }
+        .phone {
+            width: 620px; margin: 0 auto; background: #fff; border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0,0,0,.14); overflow: hidden;
+        }
+        .bar {
+            background: #075e54; color: #fff; padding: 14px 18px;
+            display: flex; align-items: center; gap: 10px; font-weight: 600;
+        }
+        .bar .av { width: 34px; height: 34px; border-radius: 50%; background: #cfe9e2; }
+        .bar .sub { font-size: 12px; opacity: .8; font-weight: 400; }
+        .chat {
+            padding: 18px; background: #efeae2; min-height: 360px;
+            display: flex; flex-direction: column; gap: 12px;
+        }
+        .bubble {
+            max-width: 82%; background: #fff; padding: 9px 12px; border-radius: 10px;
+            box-shadow: 0 1px 1px rgba(0,0,0,.08); align-self: flex-start;
+        }
+        .msg { font-size: 14.5px; line-height: 1.45; color: #111; display: inline-block; }
+        .time { display: block; font-size: 10px; color: #99a; text-align: right; margin-top: 3px; }
+    </style>
+</head>
+<body>
+    <div class="phone">
+        <div class="bar">
+            <div class="av"></div>
+            <div>
+                <div>Bank Alerts</div>
+                <div class="sub">protected by PhishGuard 🛡️</div>
+            </div>
+        </div>
+        <div class="chat" id="chat"></div>
+    </div>
+
+    <script>
+        // Messages arrive one-by-one (dynamic DOM -> content.js MutationObserver
+        // catches them). PhishGuard scans each .msg node.
+        window.DEMO_MSGS = [
+            "Hey, are we still on for lunch at 1pm tomorrow?",
+            "Your Amazon order has been delivered. Rate your experience.",
+            "URGENT! Aapka SBI khata band ho jayega. Turant KYC update karo aur OTP batao: https://sbi-verify.xyz/login"
+        ];
+        window.pushMsg = function (i) {
+            const chat = document.getElementById("chat");
+            const bubble = document.createElement("div");
+            bubble.className = "bubble";
+            const msg = document.createElement("div");
+            msg.className = "msg";
+            msg.textContent = window.DEMO_MSGS[i];
+            const t = document.createElement("span");
+            t.className = "time";
+            t.textContent = "now";
+            bubble.append(msg, t);
+            chat.appendChild(bubble);
+        };
+    </script>
+</body>
+</html>
