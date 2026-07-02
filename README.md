@@ -128,18 +128,23 @@ on-demand explainer.
 
 Setup:
 ```bash
-ollama pull qwen2.5:3b          # ~2 GB, fits alongside a browser
+ollama pull qwen2.5:3b          # ~2 GB, multilingual chat model, fits with a browser
 # allow the extension's page origin to reach Ollama, then restart Ollama:
 setx OLLAMA_ORIGINS "*"
 ```
-Model is set in [`Extension/llm.js`](Extension/llm.js) (`MODEL`). `qwen2.5:3b`
-runs comfortably next to Chrome; `aya-expanse:8b` is more accurate on Indic text
-but needs ~6 GB free RAM (it OOMs on a 16 GB machine with a browser open).
+Model is set in [`Extension/llm.js`](Extension/llm.js) (`MODEL`).
 
-**Honest note:** in testing, the small local LLM was *not* more accurate than the
-tuned on-device model (qwen2.5:3b: 2/12 false positives, ~6 s/message; the
-on-device model: 0/18, instant). So the LLM is a bonus "explain-why" feature, not
-a replacement — a good example of measuring before committing to an architecture.
+**Model selection (an honest evaluation).** Bigger local LLMs were tested and
+rejected: `aya-expanse:8b` and Cisco's cybersecurity model
+`Foundation-Sec-8B` both need ~6 GB free RAM and **OOM on a 16 GB machine with a
+browser open**; Foundation-Sec is additionally a *base* model that doesn't follow
+instructions (it can't emit a clean verdict). `qwen2.5:3b` is the sweet spot —
+multilingual, chat-tuned, and fits alongside Chrome.
+
+**Bigger picture:** in testing, small local LLMs were *not* more accurate than the
+tuned on-device model (0/18 false positives, instant). So the LLM is a bonus
+"explain-why" feature, not a replacement — a good example of measuring before
+committing to an architecture.
 
 ## Roadmap
 

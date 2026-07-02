@@ -7,8 +7,11 @@
 // clicks "Analyze with AI".
 //
 // Requires: Ollama running locally with the model below.
-//   MODEL: qwen2.5:3b fits alongside a browser (~2 GB). aya-expanse:8b is
-//   more accurate but needs ~6 GB free — swap it in only if you have the RAM.
+//   MODEL: qwen2.5:3b — a compact multilingual CHAT model (~2 GB) that fits
+//   alongside a browser and emits clean JSON verdicts. Larger 8B models
+//   (aya-expanse, Foundation-Sec) were evaluated but rejected: they need ~6 GB
+//   free RAM (OOM with a browser open on a 16 GB machine), and Foundation-Sec
+//   is a base/completion model that doesn't follow instructions.
 // For use on real sites, Ollama must allow the page origin:
 //   set OLLAMA_ORIGINS=*  and restart Ollama.
 // ===============================================================
